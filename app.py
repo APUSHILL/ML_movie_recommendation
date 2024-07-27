@@ -1,15 +1,7 @@
 import pickle
 import streamlit as st
 import pandas as pd
-import gdown
 import os
-
-# Function to download the similarity file from Google Drive
-def download_similarity_file():
-    url = 'https://drive.google.com/file/d/1gzYVPG0WorxjKUk-27T9nWYrzeF9d6R0/view?usp=drive_link'  # Replace with your file ID
-    output = 'similarity.pkl'
-    if not os.path.exists(output):
-        gdown.download(url, output, quiet=False)
 
 # Function to recommend movies
 def recommend(movie, movies, similarity):
@@ -29,16 +21,29 @@ st.header('Movie Recommender System')
 
 # Load movie list
 try:
-    movies_dict = pickle.load(open('movie_list.pkl', 'rb'))
+    movies_dict = pickle.load(open('model/movie_list.pkl', 'rb'))
     movies = pd.DataFrame(movies_dict)
 except FileNotFoundError:
     st.error("Movie list file not found.")
     st.stop()
 
-# Download and load similarity data
-download_similarity_file()
+# Try to import gdown and download similarity file if necessary
 try:
-    similarity = pickle.load(open('similarity.pkl', 'rb'))
+    import gdown
+
+    def download_similarity_file():
+        url = 'https://drive.google.com/uc?id=YOUR_FILE_ID'  # Replace with your file ID
+        output = 'model/similarity.pkl'
+        if not os.path.exists(output):
+            gdown.download(url, output, quiet=False)
+
+    download_similarity_file()
+except ModuleNotFoundError:
+    st.error("gdown module is not installed. Please install it by running `pip install gdown`.")
+
+# Load similarity data
+try:
+    similarity = pickle.load(open('model/similarity.pkl', 'rb'))
 except FileNotFoundError:
     st.error("Similarity file not found.")
     st.stop()
