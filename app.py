@@ -24,10 +24,12 @@ def recommend(movie):
             recommended_movie_posters.append(fetch_poster(movie_id))
             recommended_movie_names.append(movies.iloc[i[0]].title)
         return recommended_movie_names, recommended_movie_posters
+    except IndexError as e:
+        st.error(f"IndexError: {e}")
     except KeyError as e:
-        st.write(f"KeyError: {e}")
+        st.error(f"KeyError: {e}")
     except Exception as e:
-        st.write(f"Error: {e}")
+        st.error(f"Error: {e}")
 
 # Streamlit app
 st.header('Movie Recommender System')
@@ -49,15 +51,19 @@ st.write("Shape of the similarity matrix:")
 st.write(similarity.shape)
 
 # Movie list
-movie_list = movies['title'].values
-selected_movie = st.selectbox("Type or select a movie from the dropdown", movie_list)
+if 'title' in movies.columns:
+    movie_list = movies['title'].values
+    selected_movie = st.selectbox("Type or select a movie from the dropdown", movie_list)
 
-if st.button('Show Recommendation'):
-    recommended_movie_names, recommended_movie_posters = recommend(selected_movie)
-    if recommended_movie_names and recommended_movie_posters:
-        cols = st.columns(5)
-        for col, name, poster in zip(cols, recommended_movie_names, recommended_movie_posters):
-            col.text(name)
-            col.image(poster)
+    if st.button('Show Recommendation'):
+        recommended_movie_names, recommended_movie_posters = recommend(selected_movie)
+        if recommended_movie_names and recommended_movie_posters:
+            cols = st.columns(5)
+            for col, name, poster in zip(cols, recommended_movie_names, recommended_movie_posters):
+                col.text(name)
+                col.image(poster)
+else:
+    st.error("The 'title' column is missing from the movies DataFrame.")
+
 
 
