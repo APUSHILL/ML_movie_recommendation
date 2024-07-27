@@ -16,36 +16,53 @@ def recommend(movie, movies, similarity):
 
     return recommended_movie_names
 
+# Function to download files using gdown
+def download_file_from_google_drive(file_id, dest_path):
+    try:
+        import gdown
+        url = f'https://drive.google.com/uc?id={1gzYVPG0WorxjKUk-27T9nWYrzeF9d6R0}'
+        gdown.download(url, dest_path, quiet=False)
+    except ModuleNotFoundError:
+        st.error("gdown module is not installed. Please install it by running `pip install gdown`.")
+        st.stop()
+
 # Streamlit app header
 st.header('Movie Recommender System')
 
+# Ensure model directory exists
+os.makedirs('model', exist_ok=True)
+
+# File paths
+movie_list_path = 'movie_list.pkl'
+similarity_path = 'similarity.pkl'
+
+# Google Drive file IDs
+movie_list_file_id = 'YOUR_MOVIE_LIST_FILE_ID'
+similarity_file_id = 'YOUR_SIMILARITY_FILE_ID'
+
+# Download movie_list.pkl if it doesn't exist
+if not os.path.exists(movie_list_path):
+    st.warning("Movie list file not found. Downloading it now...")
+    download_file_from_google_drive(movie_list_file_id, movie_list_path)
+
+# Download similarity.pkl if it doesn't exist
+if not os.path.exists(similarity_path):
+    st.warning("Similarity file not found. Downloading it now...")
+    download_file_from_google_drive(similarity_file_id, similarity_path)
+
 # Load movie list
 try:
-    movies_dict = pickle.load(open('movie_list.pkl', 'rb'))
+    movies_dict = pickle.load(open(movie_list_path, 'rb'))
     movies = pd.DataFrame(movies_dict)
 except FileNotFoundError:
-    st.error("Movie list file not found.")
+    st.error("Movie list file still not found after attempting download.")
     st.stop()
-
-# Try to import gdown and download similarity file if necessary
-try:
-    import gdown
-
-    def download_similarity_file():
-        url = 'https://drive.google.com/file/d/1gzYVPG0WorxjKUk-27T9nWYrzeF9d6R0/view?usp=drive_link'  # Replace with your file ID
-        output = 'similarity.pkl'
-        if not os.path.exists(output):
-            gdown.download(url, output, quiet=False)
-
-    download_similarity_file()
-except ModuleNotFoundError:
-    st.error("gdown module is not installed. Please install it by running `pip install gdown`.")
 
 # Load similarity data
 try:
-    similarity = pickle.load(open('similarity.pkl', 'rb'))
+    similarity = pickle.load(open(similarity_path, 'rb'))
 except FileNotFoundError:
-    st.error("Similarity file not found.")
+    st.error("Similarity file still not found after attempting download.")
     st.stop()
 
 # Extract movie titles from the movies DataFrame
