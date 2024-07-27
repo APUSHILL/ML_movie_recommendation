@@ -40,6 +40,14 @@ similarity = pickle.load(open('/mount/src/ml_movie_recommendation/movies.pkl', '
 st.write("Movies DataFrame columns:")
 st.write(movies.columns)
 
+# Display the first few rows of the movies DataFrame
+st.write("First few rows of the Movies DataFrame:")
+st.write(movies.head())
+
+# Display the shape of the similarity matrix
+st.write("Shape of the similarity matrix:")
+st.write(similarity.shape)
+
 # Movie list
 movie_list = movies['title'].values
 selected_movie = st.selectbox("Type or select a movie from the dropdown", movie_list)
@@ -51,4 +59,5 @@ if st.button('Show Recommendation'):
         for col, name, poster in zip(cols, recommended_movie_names, recommended_movie_posters):
             col.text(name)
             col.image(poster)
+
 
