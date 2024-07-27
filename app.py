@@ -14,15 +14,20 @@ def fetch_poster(movie_id):
 
 # Function to get movie recommendations
 def recommend(movie):
-    index = movies[movies['title'] == movie].index[0]
-    distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
-    recommended_movie_names = []
-    recommended_movie_posters = []
-    for i in distances[1:6]:
-        movie_id = movies.iloc[i[0]].movie_id
-        recommended_movie_posters.append(fetch_poster(movie_id))
-        recommended_movie_names.append(movies.iloc[i[0]].title)
-    return recommended_movie_names, recommended_movie_posters
+    try:
+        index = movies[movies['title'] == movie].index[0]
+        distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
+        recommended_movie_names = []
+        recommended_movie_posters = []
+        for i in distances[1:6]:
+            movie_id = movies.iloc[i[0]].movie_id
+            recommended_movie_posters.append(fetch_poster(movie_id))
+            recommended_movie_names.append(movies.iloc[i[0]].title)
+        return recommended_movie_names, recommended_movie_posters
+    except KeyError as e:
+        st.write(f"KeyError: {e}")
+    except Exception as e:
+        st.write(f"Error: {e}")
 
 # Streamlit app
 st.header('Movie Recommender System')
@@ -31,13 +36,19 @@ st.header('Movie Recommender System')
 movies = pd.read_csv('/mount/src/ml_movie_recommendation/tmdb_5000_movies.csv')
 similarity = pickle.load(open('/mount/src/ml_movie_recommendation/movies.pkl', 'rb'))
 
+# Display the structure of the movies DataFrame
+st.write("Movies DataFrame columns:")
+st.write(movies.columns)
+
 # Movie list
 movie_list = movies['title'].values
 selected_movie = st.selectbox("Type or select a movie from the dropdown", movie_list)
 
 if st.button('Show Recommendation'):
     recommended_movie_names, recommended_movie_posters = recommend(selected_movie)
-    cols = st.columns(5)
-    for col, name, poster in zip(cols, recommended_movie_names, recommended_movie_posters):
-        col.text(name)
-        col.image(poster)
+    if recommended_movie_names and recommended_movie_posters:
+        cols = st.columns(5)
+        for col, name, poster in zip(cols, recommended_movie_names, recommended_movie_posters):
+            col.text(name)
+            col.image(poster)
+
