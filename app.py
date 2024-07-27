@@ -21,7 +21,7 @@ st.header('Movie Recommender System')
 
 # Load movie list
 try:
-    movies_dict = pickle.load(open('model/movie_list.pkl', 'rb'))
+    movies_dict = pickle.load(open('movie_list.pkl', 'rb'))
     movies = pd.DataFrame(movies_dict)
 except FileNotFoundError:
     st.error("Movie list file not found.")
@@ -32,8 +32,8 @@ try:
     import gdown
 
     def download_similarity_file():
-        url = 'https://drive.google.com/uc?id=YOUR_FILE_ID'  # Replace with your file ID
-        output = 'model/similarity.pkl'
+        url = 'https://drive.google.com/file/d/1gzYVPG0WorxjKUk-27T9nWYrzeF9d6R0/view?usp=drive_link'  # Replace with your file ID
+        output = 'similarity.pkl'
         if not os.path.exists(output):
             gdown.download(url, output, quiet=False)
 
@@ -43,7 +43,7 @@ except ModuleNotFoundError:
 
 # Load similarity data
 try:
-    similarity = pickle.load(open('model/similarity.pkl', 'rb'))
+    similarity = pickle.load(open('similarity.pkl', 'rb'))
 except FileNotFoundError:
     st.error("Similarity file not found.")
     st.stop()
