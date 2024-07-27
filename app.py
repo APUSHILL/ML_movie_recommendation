@@ -1,21 +1,29 @@
 import os
-import pickle
 import streamlit as st
-import pandas as pd
 
 # Check current directory files
 st.write("Current directory files:")
-st.write(os.listdir('/mnt/data/'))
+current_dir = os.getcwd()
+st.write(f"Current working directory: {current_dir}")
+st.write(os.listdir(current_dir))
 
-# Attempt to load the files
-try:
-    movies = pd.read_csv('/mnt/data/tmdb_5000_movies.csv')
-    st.write("tmdb_5000_movies.csv loaded successfully")
-except Exception as e:
-    st.write(f"Error loading tmdb_5000_movies.csv: {e}")
+# Check files in the parent directory
+parent_dir = os.path.dirname(current_dir)
+st.write(f"Parent directory: {parent_dir}")
+st.write(os.listdir(parent_dir))
 
-try:
-    similarity = pickle.load(open('/mnt/data/movies.pkl', 'rb'))
-    st.write("movies.pkl loaded successfully")
-except Exception as e:
-    st.write(f"Error loading movies.pkl: {e}")
+# Check files in the /mnt directory
+mnt_dir = '/mnt'
+if os.path.exists(mnt_dir):
+    st.write(f"/mnt directory: {mnt_dir}")
+    st.write(os.listdir(mnt_dir))
+else:
+    st.write(f"/mnt directory does not exist: {mnt_dir}")
+
+# Check files in the /mnt/data directory
+data_dir = '/mnt/data'
+if os.path.exists(data_dir):
+    st.write(f"/mnt/data directory: {data_dir}")
+    st.write(os.listdir(data_dir))
+else:
+    st.write(f"/mnt/data directory does not exist: {data_dir}")
